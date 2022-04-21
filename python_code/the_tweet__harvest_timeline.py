@@ -55,10 +55,10 @@ t = login()
 
 # Establish a connection to a CouchDB database
 server = couchdb.Server('http://localhost:5984')
-DB = 'tweets-%s-timeline' % (TIMELINE_NAME, )
+DB = f'tweets-{TIMELINE_NAME}-timeline'
 
 if USER:
-    DB = '%s-%s' % (DB, USER)
+    DB = f'{DB}-{USER}'
 
 try:
     db = server.create(DB)

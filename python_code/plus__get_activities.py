@@ -66,11 +66,9 @@ while request != None and len(activities) < MAX_RESULTS:
 if not os.path.isdir('out'):
     os.mkdir('out')
 
-filename = os.path.join('out', USER_ID + '.plus')
-f = open(filename, 'w')
-f.write(json.dumps(activities, indent=2))
-f.close()
-
+filename = os.path.join('out', f'{USER_ID}.plus')
+with open(filename, 'w') as f:
+  f.write(json.dumps(activities, indent=2))
 print >> sys.stderr, str(len(activities)), "activities written to", f.name
 
 # Or store it somewhere like CouchDB like so...

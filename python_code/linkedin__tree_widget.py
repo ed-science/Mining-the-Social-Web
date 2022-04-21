@@ -26,10 +26,13 @@ for titles in clustered_contacts:
                                                  in clustered_contacts[titles]]
 
 for descriptive_terms in data['temp_items']:
-    data['items'].append({"name": "%s (%s)" % (descriptive_terms,
-                                               len(data['temp_items'][descriptive_terms]),),
-                          "children": [i for i in
-                                       data['temp_items'][descriptive_terms]]})
+    data['items'].append(
+        {
+            "name": f"{descriptive_terms} ({len(data['temp_items'][descriptive_terms])})",
+            "children": list(data['temp_items'][descriptive_terms]),
+        }
+    )
+
 
 del data['temp_items']
 
@@ -41,8 +44,6 @@ if not os.path.isdir('out'):
 OUT = os.path.join('out', 'dojo_tree.html')
 
 t = open(HTML_TEMPLATE).read()
-f = open(OUT, 'w')
-f.write(t % json.dumps(data, indent=4))
-f.close()
-
-webbrowser.open("file://" + os.path.join(os.getcwd(), OUT))
+with open(OUT, 'w') as f:
+    f.write(t % json.dumps(data, indent=4))
+webbrowser.open(f"file://{os.path.join(os.getcwd(), OUT)}")

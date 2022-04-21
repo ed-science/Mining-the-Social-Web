@@ -88,7 +88,7 @@ class GraphAPI(object):
 
     def get_connections(self, id, connection_name, **args):
         """Fetchs the connections for given object."""
-        return self.request(id + "/" + connection_name, args)
+        return self.request(f"{id}/{connection_name}", args)
 
     def put_object(self, parent_object, connection_name, **data):
         """Writes the given object to the graph, connected to the given parent.
@@ -113,7 +113,7 @@ class GraphAPI(object):
         extended permissions.
         """
         assert self.access_token, "Write operations require an access token"
-        return self.request(parent_object + "/" + connection_name, post_args=data)
+        return self.request(f"{parent_object}/{connection_name}", post_args=data)
 
     def put_wall_post(self, message, attachment={}, profile_id="me"):
         """Writes a wall post to the given profile's wall.
@@ -158,8 +158,11 @@ class GraphAPI(object):
             else:
                 args["access_token"] = self.access_token
         post_data = None if post_args is None else urllib.urlencode(post_args)
-        file = urllib.urlopen("https://graph.facebook.com/" + path + "?" +
-                              urllib.urlencode(args), post_data)
+        file = urllib.urlopen(
+            (f"https://graph.facebook.com/{path}?" + urllib.urlencode(args)),
+            post_data,
+        )
+
         try:
             response = _parse_json(file.read())
         finally:
@@ -191,11 +194,13 @@ def get_user_from_cookie(cookies, app_id, app_secret):
     http://github.com/facebook/connect-js/. Read more about Facebook
     authentication at http://developers.facebook.com/docs/authentication/.
     """
-    cookie = cookies.get("fbs_" + app_id, "")
+    cookie = cookies.get(f"fbs_{app_id}", "")
     if not cookie: return None
-    args = dict((k, v[-1]) for k, v in cgi.parse_qs(cookie.strip('"')).items())
-    payload = "".join(k + "=" + args[k] for k in sorted(args.keys())
-                      if k != "sig")
+    args = {k: v[-1] for k, v in cgi.parse_qs(cookie.strip('"')).items()}
+    payload = "".join(
+        f"{k}={args[k]}" for k in sorted(args.keys()) if k != "sig"
+    )
+
     sig = hashlib.md5(payload + app_secret).hexdigest()
     expires = int(args["expires"])
     if sig == args.get("sig") and (expires == 0 or time.time() < expires):

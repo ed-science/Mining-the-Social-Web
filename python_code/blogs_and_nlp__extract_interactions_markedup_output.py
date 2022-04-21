@@ -38,14 +38,12 @@ if __name__ == '__main__':
 
             s = post['sentences'][sentence_idx]
             for (term, _) in post['entity_interactions'][sentence_idx]:
-                s = s.replace(term, '<strong>%s</strong>' % (term, ))
+                s = s.replace(term, f'<strong>{term}</strong>')
 
             post['markup'] += [s]
-        
-        filename = post['title'] + '.entity_interactions.html'
-        f = open(os.path.join('out', 'interactions', filename), 'w')
-        html = HTML_TEMPLATE % (post['title'] + ' Interactions', ' '.join(post['markup']),)
-        f.write(html.encode('utf-8'))
-        f.close()
 
+        filename = post['title'] + '.entity_interactions.html'
+        with open(os.path.join('out', 'interactions', filename), 'w') as f:
+            html = HTML_TEMPLATE % (post['title'] + ' Interactions', ' '.join(post['markup']),)
+            f.write(html.encode('utf-8'))
         print >> sys.stderr, "Data written to", f.name

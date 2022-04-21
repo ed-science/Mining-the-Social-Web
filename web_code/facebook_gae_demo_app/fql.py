@@ -21,21 +21,21 @@ class FQL(object):
     def __call__(self, query, **params):
         
         params.update(query=query, access_token=self.access_token, format='json')
-        url = self.ENDPOINT + 'fql.query'
+        url = f'{self.ENDPOINT}fql.query'
         return self.fetch_json(url, data=urlencode(params))
     
     def multi(self, queries, **params):
         params.update(queries=json.dumps(queries), access_token=self.access_token, format='json')
-        url = self.ENDPOINT + 'fql.multiquery'
+        url = f'{self.ENDPOINT}fql.multiquery'
         return self.fetch_json(url, data=urlencode(params))
     
-    def fetch_json(cls, url, data=None):
+    def fetch_json(self, url, data=None):
         result = urlfetch.fetch(url, deadline=30, method=urlfetch.POST, payload=data)
         return json.loads(result.content)
 
     def local_call(self, query, **params):
         params.update(query=query, access_token=self.access_token, format='json')
-        url = self.ENDPOINT + 'fql.query'
+        url = f'{self.ENDPOINT}fql.query'
         conn = urllib2.urlopen(url, data=urlencode(params))
         try:
             return conn.read()

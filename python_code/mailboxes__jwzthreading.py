@@ -45,18 +45,13 @@ class Container:
     def has_descendant(self, ctr):
         if self is ctr:
             return True
-        for c in self.children:
-            if c is ctr:
-                return True
-            elif c.has_descendant(ctr):
-                return True
-        return False
+        return any(
+            c is ctr or c is not ctr and c.has_descendant(ctr)
+            for c in self.children
+        )
 
     def __len__(self):
-        count = 1
-        for c in self.children:
-            count += len(c)
-        return count
+        return 1 + sum(len(c) for c in self.children)
 
     @staticmethod
     def display(ctr, depth=0, debug=1):
@@ -148,7 +143,7 @@ class Message(object):
         if m is None:
             return
 
-        self.message_id = m.group(1)
+        self.message_id = m[1]
 
         # Get list of unique message IDs from the References: header
 
@@ -157,9 +152,8 @@ class Message(object):
         # Get In-Reply-To: header and add it to references
 
         in_reply_to = msg.get('In-Reply-To', '')
-        m = msgid_pat.search(in_reply_to)
-        if m:
-            msg_id = m.group(1)
+        if m := msgid_pat.search(in_reply_to):
+            msg_id = m[1]
             if msg_id not in self.references:
                 self.references.append(msg_id)
 
@@ -183,7 +177,7 @@ def thread(msglist):
 
         # 1A
 
-        this_container = id_table.get(msg.message_id, None)
+        this_container = id_table.get(msg.message_id)
         if this_container is not None:
             this_container.message = msg
         else:
@@ -195,7 +189,7 @@ def thread(msglist):
 
         prev = None
         for ref in msg.references:
-            container = id_table.get(ref, None)
+            container = id_table.get(ref)
             if container is None:
                 container = Container()
                 container.message_id = ref
@@ -228,7 +222,7 @@ def thread(msglist):
     # 4. Prune empty containers
 
     for container in root_set:
-        assert container.parent == None
+        assert container.parent is None
 
     new_root_set = []
     for container in root_set:
@@ -257,11 +251,14 @@ def thread(msglist):
         if subj == '':
             continue
 
-        existing = subject_table.get(subj, None)
-        if existing is None or existing.message is not None and container.message \
-            is None or existing.message is not None and container.message \
-            is not None and len(existing.message.subject) \
-            > len(container.message.subject):
+        existing = subject_table.get(subj)
+        if (
+            existing is None
+            or existing.message is not None
+            and container.message is None
+            or existing.message is not None
+            and len(existing.message.subject) > len(container.message.subject)
+        ):
             subject_table[subj] = container
 
     # 5C

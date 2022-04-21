@@ -85,10 +85,8 @@ def login():
         os.mkdir('out')
 
     filename = os.path.join('out', 'facebook.access_token')
-    f = open(filename, 'w')
-    f.write(access_token)
-    f.close()
-
+    with open(filename, 'w') as f:
+        f.write(access_token)
     print >> sys.stderr, \
             "Access token stored to local file: 'out/facebook.access_token'"
 

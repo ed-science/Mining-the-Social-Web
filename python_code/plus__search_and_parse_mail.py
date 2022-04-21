@@ -18,12 +18,12 @@ OAUTH_TOKEN_SECRET = sys.argv[2]  # obtained with xoauth.py
 GMAIL_ACCOUNT = sys.argv[3]  # example@gmail.com
 Q = sys.argv[4]
 
-url = 'https://mail.google.com/mail/b/%s/imap/' % (GMAIL_ACCOUNT, )
+url = f'https://mail.google.com/mail/b/{GMAIL_ACCOUNT}/imap/'
 
 # Authenticate with OAuth
 
 # Standard values for GMail's xoauth implementation
-consumer = oauth.Consumer('anonymous', 'anonymous')  
+consumer = oauth.Consumer('anonymous', 'anonymous')
 token = oauth.Token(OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
 conn = imaplib.IMAP4_SSL('imap.googlemail.com')
 conn.debug = 4

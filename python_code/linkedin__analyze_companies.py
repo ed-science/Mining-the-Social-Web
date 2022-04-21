@@ -13,7 +13,7 @@ CSV_FILE = sys.argv[1]
 transforms = [(', Inc.', ''), (', Inc', ''), (', LLC', ''), (', LLP', '')]
 
 csvReader = csv.DictReader(open(CSV_FILE), delimiter=',', quotechar='"')
-contacts = [row for row in csvReader]
+contacts = list(csvReader)
 companies = [c['Company'].strip() for c in contacts if c['Company'].strip() != '']
 
 for i in range(len(companies)):

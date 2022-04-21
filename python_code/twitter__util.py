@@ -46,13 +46,12 @@ def handleTwitterHTTPError(e, wait_period=2, sleep_when_rate_limited=True):
         return None
     elif e.e.code == 429: 
         print >> sys.stderr, 'Encountered 429 Error (Rate Limit Exceeded)'
-        if sleep_when_rate_limited:
-            print >> sys.stderr, "Sleeping for 15 minutes, and then I'll try again...ZzZ..."
-            time.sleep(60*15 + 5)
-            print >> sys.stderr, '...ZzZ...Awake now and trying again.'
-            return 2
-        else:
+        if not sleep_when_rate_limited:
             raise e # Allow user to handle the rate limiting issue however they'd like 
+        print >> sys.stderr, "Sleeping for 15 minutes, and then I'll try again...ZzZ..."
+        time.sleep(60*15 + 5)
+        print >> sys.stderr, '...ZzZ...Awake now and trying again.'
+        return 2
     elif e.e.code in (502, 503):
         print >> sys.stderr, 'Encountered %i Error. Will retry in %i seconds' % (e.e.code,
                 wait_period)
@@ -86,7 +85,7 @@ def _getFriendsOrFollowersUsingFunc(
 
         cursor = response['next_cursor']
         scard = r.scard(getRedisIdByScreenName(screen_name, key_name))
-        print >> sys.stderr, 'Fetched %s ids for %s' % (scard, screen_name)
+        (print >> sys.stderr, f'Fetched {scard} ids for {screen_name}')
         if scard >= limit:
             break
 
@@ -159,18 +158,18 @@ def pp(_int):  # For nice number formatting
 
 
 def getRedisIdByScreenName(screen_name, key_name):
-    return 'screen_name$' + screen_name + '$' + key_name
+    return f'screen_name${screen_name}${key_name}'
 
 
 def getRedisIdByUserId(user_id, key_name):
-    return 'user_id$' + str(user_id) + '$' + key_name
+    return f'user_id${str(user_id)}${key_name}'
 
 # For calculating the max_id parameter from statuses, which is 
 # necessary in order to traverse a timeline in the v1.1 API. 
 # See https://dev.twitter.com/docs/working-with-timelines
 
 def getNextQueryMaxIdParam(statuses): 
-    return min([ status['id'] for status in statuses ]) - 1
+    return min(status['id'] for status in statuses) - 1
 
 if __name__ == '__main__': # For ad-hoc testing
 

@@ -26,17 +26,17 @@ def cluster_contacts_by_title(csv_file):
     separators = ['/', 'and', '&']
 
     csvReader = csv.DictReader(open(csv_file), delimiter=',', quotechar='"')
-    contacts = [row for row in csvReader]
+    contacts = list(csvReader)
 
     # Normalize and/or replace known abbreviations
     # and build up list of common titles
 
     all_titles = []
-    for i in range(len(contacts)):
-        if contacts[i]['Job Title'] == '':
-            contacts[i]['Job Titles'] = ['']
+    for contact_ in contacts:
+        if contact_['Job Title'] == '':
+            contact_['Job Titles'] = ['']
             continue
-        titles = [contacts[i]['Job Title']]
+        titles = [contact_['Job Title']]
         for title in titles:
             for seperator in separators:
                 if title.find(seperator) >= 0:
@@ -46,7 +46,7 @@ def cluster_contacts_by_title(csv_file):
 
         for transform in transforms:
             titles = [title.replace(*transform) for title in titles]
-        contacts[i]['Job Titles'] = titles
+        contact_['Job Titles'] = titles
         all_titles.extend(titles)
 
     all_titles = list(set(all_titles))
@@ -74,8 +74,10 @@ def cluster_contacts_by_title(csv_file):
         for contact in contacts:
             for title in contact['Job Titles']:
                 if title in cluster:
-                    clustered_contacts[tuple(cluster)].append('%s %s.'
-                                                              % (contact['First Name'], contact['Last Name'][0]))
+                    clustered_contacts[tuple(cluster)].append(
+                        f"{contact['First Name']} {contact['Last Name'][0]}."
+                    )
+
 
     return clustered_contacts
 

@@ -35,8 +35,7 @@ def entityCountMapper(doc):
             # Note that the production Twitter API contains a few additional fields in
             # the entities hash that would require additional API calls to resolve
 
-            entities = {}
-            entities['user_mentions'] = []
+            entities = {'user_mentions': []}
             for um in extractor.extract_mentioned_screen_names_with_indices():
                 entities['user_mentions'].append(um)
 
@@ -49,10 +48,7 @@ def entityCountMapper(doc):
                 del ht['hashtag']
                 entities['hashtags'].append(ht)
 
-            entities['urls'] = []
-            for url in extractor.extract_urls_with_indices():
-                entities['urls'].append(url)
-
+            entities['urls'] = list(extractor.extract_urls_with_indices())
             return entities
 
         doc['entities'] = getEntities(doc)
@@ -66,10 +62,7 @@ def entityCountMapper(doc):
 
 
 def summingReducer(keys, values, rereduce):
-    if rereduce:
-        return sum(values)
-    else:
-        return len(values)
+    return sum(values) if rereduce else len(values)
 
 
 view = ViewDefinition('index', 'entity_count_by_doc', entityCountMapper,

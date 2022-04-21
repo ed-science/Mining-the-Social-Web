@@ -292,12 +292,15 @@ class TwitterSocialGraphUtility:
                     self.getUserInfo(user_ids=next_queue)
 
     def getRedisIdByScreenName(self, screen_name, key_name):
-        return 'screen_name' + self._REDIS_DELIM + screen_name \
-            + self._REDIS_DELIM + key_name
+        return (
+            f'screen_name{self._REDIS_DELIM}{screen_name}' + self._REDIS_DELIM
+        ) + key_name
 
     def getRedisIdByUserId(self, user_id, key_name):
-        return 'user_id' + self._REDIS_DELIM + str(user_id) + self._REDIS_DELIM \
+        return (
+            f'user_id{self._REDIS_DELIM}{str(user_id)}{self._REDIS_DELIM}'
             + key_name
+        )
 
     def friendsFollowersSymmetry(self, screen_names):
         for screen_name in screen_names:

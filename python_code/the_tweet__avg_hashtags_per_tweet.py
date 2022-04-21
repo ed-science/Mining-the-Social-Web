@@ -29,8 +29,7 @@ def entityCountMapper(doc):
             # Note that the production Twitter API contains a few additional fields in
             # the entities hash that would require additional API calls to resolve
 
-            entities = {}
-            entities['user_mentions'] = []
+            entities = {'user_mentions': []}
             for um in extractor.extract_mentioned_screen_names_with_indices():
                 entities['user_mentions'].append(um)
 
@@ -43,10 +42,7 @@ def entityCountMapper(doc):
                 del ht['hashtag']
                 entities['hashtags'].append(ht)
 
-            entities['urls'] = []
-            for url in extractor.extract_urls_with_indices():
-                entities['urls'].append(url)
-
+            entities['urls'] = list(extractor.extract_urls_with_indices())
             return entities
 
         doc['entities'] = getEntities(doc)
@@ -63,7 +59,7 @@ view = ViewDefinition('index', 'count_hashtags', entityCountMapper,
                       reduce_fun=summingReducer, language='python')
 view.sync(db)
 
-num_hashtags = [row for row in db.view('index/count_hashtags')][0].value
+num_hashtags = list(db.view('index/count_hashtags'))[0].value
 
 # Now, count the total number of tweets that aren't direct replies
 

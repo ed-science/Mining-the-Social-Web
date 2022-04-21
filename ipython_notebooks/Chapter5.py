@@ -81,8 +81,7 @@ def getEntities(tweet):
     # Note that the production Twitter API contains a few additional fields in
     # the entities hash that would require additional API calls to resolve
 
-    entities = {}
-    entities['user_mentions'] = []
+    entities = {'user_mentions': []}
     for um in extractor.extract_mentioned_screen_names_with_indices():
         entities['user_mentions'].append(um)
 
@@ -95,10 +94,7 @@ def getEntities(tweet):
         del ht['hashtag']
         entities['hashtags'].append(ht)
 
-    entities['urls'] = []
-    for url in extractor.extract_urls_with_indices():
-        entities['urls'].append(url)
-
+    entities['urls'] = list(extractor.extract_urls_with_indices())
     return entities
 
 
@@ -241,8 +237,7 @@ def entityCountMapper(doc):
             # Note that the production Twitter API contains a few additional fields in
             # the entities hash that would require additional API calls to resolve
 
-            entities = {}
-            entities['user_mentions'] = []
+            entities = {'user_mentions': []}
             for um in extractor.extract_mentioned_screen_names_with_indices():
                 entities['user_mentions'].append(um)
 
@@ -255,10 +250,7 @@ def entityCountMapper(doc):
                 del ht['hashtag']
                 entities['hashtags'].append(ht)
 
-            entities['urls'] = []
-            for url in extractor.extract_urls_with_indices():
-                entities['urls'].append(url)
-
+            entities['urls'] = list(extractor.extract_urls_with_indices())
             return entities
 
         doc['entities'] = getEntities(doc)
@@ -275,10 +267,7 @@ def entityCountMapper(doc):
 
 
 def summingReducer(keys, values, rereduce):
-    if rereduce:
-        return sum(values)
-    else:
-        return len(values)
+    return sum(values) if rereduce else len(values)
 
 
 view = ViewDefinition('index', 'entity_count_by_doc', entityCountMapper,
@@ -574,8 +563,7 @@ Please check that the database exists and try again.""" % DB
 def entityCountMapper(doc):
     if doc.get('text'):
         import re
-        m = re.search(r"(RT|via)((?:\b\W*@\w+)+)", doc['text'])
-        if m:
+        if m := re.search(r"(RT|via)((?:\b\W*@\w+)+)", doc['text']):
             entities = m.groups()[1].split()
             for entity in entities:
                 yield (entity.lower(), [doc['_id'], doc['id']])
@@ -584,10 +572,7 @@ def entityCountMapper(doc):
 
 
 def summingReducer(keys, values, rereduce):
-    if rereduce:
-        return sum(values)
-    else:
-        return len(values)
+    return sum(values) if rereduce else len(values)
 
 
 view = ViewDefinition('index', 'retweet_entity_count_by_doc', entityCountMapper,
@@ -711,8 +696,7 @@ def entityCountMapper(doc):
             # Note that the production Twitter API contains a few additional fields in
             # the entities hash that would require additional API calls to resolve
 
-            entities = {}
-            entities['user_mentions'] = []
+            entities = {'user_mentions': []}
             for um in extractor.extract_mentioned_screen_names_with_indices():
                 entities['user_mentions'].append(um)
 
@@ -725,10 +709,7 @@ def entityCountMapper(doc):
                 del ht['hashtag']
                 entities['hashtags'].append(ht)
 
-            entities['urls'] = []
-            for url in extractor.extract_urls_with_indices():
-                entities['urls'].append(url)
-
+            entities['urls'] = list(extractor.extract_urls_with_indices())
             return entities
 
         doc['entities'] = getEntities(doc)
@@ -745,7 +726,7 @@ view = ViewDefinition('index', 'count_hashtags', entityCountMapper,
                       reduce_fun=summingReducer, language='python')
 view.sync(db)
 
-num_hashtags = [row for row in db.view('index/count_hashtags')][0].value
+num_hashtags = list(db.view('index/count_hashtags'))[0].value
 
 # Now, count the total number of tweets that aren't direct replies
 

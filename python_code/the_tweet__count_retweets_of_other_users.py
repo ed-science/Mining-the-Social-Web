@@ -32,8 +32,7 @@ else:
 def entityCountMapper(doc):
     if doc.get('text'):
         import re
-        m = re.search(r"(RT|via)((?:\b\W*@\w+)+)", doc['text'])
-        if m:
+        if m := re.search(r"(RT|via)((?:\b\W*@\w+)+)", doc['text']):
             entities = m.groups()[1].split()
             for entity in entities:
                 yield (entity.lower(), [doc['_id'], doc['id']])
@@ -42,10 +41,7 @@ def entityCountMapper(doc):
 
 
 def summingReducer(keys, values, rereduce):
-    if rereduce:
-        return sum(values)
-    else:
-        return len(values)
+    return sum(values) if rereduce else len(values)
 
 
 view = ViewDefinition('index', 'retweet_entity_count_by_doc', entityCountMapper,

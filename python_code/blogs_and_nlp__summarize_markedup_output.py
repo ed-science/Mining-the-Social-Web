@@ -35,15 +35,19 @@ if __name__ == '__main__':
         # for analysis with simple string replacement...
 
         for summary_type in ['top_n_summary', 'mean_scored_summary']:
-            post[summary_type + '_marked_up'] = '<p>%s</p>' % (post['content'], )
+            post[f'{summary_type}_marked_up'] = f"<p>{post['content']}</p>"
             for s in post[summary_type]:
-                post[summary_type + '_marked_up'] = \
-                post[summary_type + '_marked_up'].replace(s, '<strong>%s</strong>' % (s, ))
+                post[f'{summary_type}_marked_up'] = post[
+                    f'{summary_type}_marked_up'
+                ].replace(s, f'<strong>{s}</strong>')
+
 
             filename = post['title'] + '.summary.' + summary_type + '.html'
-            f = open(os.path.join('out', 'summarize', filename), 'w')
-            html = HTML_TEMPLATE % (post['title'] + ' Summary', post[summary_type + '_marked_up'],)
-            f.write(html.encode('utf-8'))
-            f.close()
+            with open(os.path.join('out', 'summarize', filename), 'w') as f:
+                html = HTML_TEMPLATE % (
+                    post['title'] + ' Summary',
+                    post[f'{summary_type}_marked_up'],
+                )
 
+                f.write(html.encode('utf-8'))
             print >> sys.stderr, "Data written to", f.name

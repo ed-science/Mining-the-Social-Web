@@ -67,7 +67,7 @@ def _score_sentences(sentences, important_words):
     return scores
 
 def summarize(txt):
-    sentences = [s for s in nltk.tokenize.sent_tokenize(txt)]
+    sentences = list(nltk.tokenize.sent_tokenize(txt))
     normalized_sentences = [s.lower() for s in sentences]
 
     words = [w.lower() for sentence in normalized_sentences for w in

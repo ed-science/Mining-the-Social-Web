@@ -49,11 +49,11 @@ for idx in range(len(activities)):
 # Build vectors such that term scores are in the same positions...
 
 distances = {}
-for (title1, url1) in td_matrix.keys():
+for (title1, url1) in td_matrix:
 
     distances[(title1, url1)] = {}
 
-    for (title2, url2) in td_matrix.keys():
+    for (title2, url2) in td_matrix:
 
         if url1 == url2:
             continue
@@ -142,9 +142,7 @@ shutil.copytree('../web_code/protovis/protovis-3.2',
 
 for template in HTML_TEMPLATES:
     html = open(template).read() % (json.dumps(json_data),)
-    f = open(os.path.join(os.getcwd(), 'out', os.path.basename(template)), 'w')
-    f.write(html)
-    f.close()
-
-    print >> sys.stderr, 'Data file written to: %s' % f.name
-    webbrowser.open('file://' + f.name)
+    with open(os.path.join(os.getcwd(), 'out', os.path.basename(template)), 'w') as f:
+        f.write(html)
+    (print >> sys.stderr, f'Data file written to: {f.name}')
+    webbrowser.open(f'file://{f.name}')

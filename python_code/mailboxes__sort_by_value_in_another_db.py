@@ -17,7 +17,7 @@ docs = db.view('index/doc_count_by_date_time', group_level=3)
 
 # Now, load the documents keyed by [year, month, day] into a new database
 
-db_scratch = server.create(DB + '-num-per-day')
+db_scratch = server.create(f'{DB}-num-per-day')
 db_scratch.update(docs)
 
 

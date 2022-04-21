@@ -36,17 +36,17 @@ transforms = [
 seperators = ['/', 'and', '&']
 
 csvReader = csv.DictReader(open(CSV_FILE), delimiter=',', quotechar='"')
-contacts = [row for row in csvReader]
+contacts = list(csvReader)
 
 # Normalize and/or replace known abbreviations
 # and build up list of common titles
 
 all_titles = []
-for i in range(len(contacts)):
-    if contacts[i]['Job Title'] == '':
-        contacts[i]['Job Titles'] = ['']
+for contact in contacts:
+    if contact['Job Title'] == '':
+        contact['Job Titles'] = ['']
         continue
-    titles = [contacts[i]['Job Title']]
+    titles = [contact['Job Title']]
     for title in titles:
         for seperator in seperators:
             if title.find(seperator) >= 0:
@@ -56,7 +56,7 @@ for i in range(len(contacts)):
 
     for transform in transforms:
         titles = [title.replace(*transform) for title in titles]
-    contacts[i]['Job Titles'] = titles
+    contact['Job Titles'] = titles
     all_titles.extend(titles)
 
 all_titles = list(set(all_titles))

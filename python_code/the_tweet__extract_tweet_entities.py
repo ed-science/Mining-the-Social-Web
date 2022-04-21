@@ -37,8 +37,7 @@ def getEntities(tweet):
     # Note that the production Twitter API contains a few additional fields in
     # the entities hash that would require additional API calls to resolve
 
-    entities = {}
-    entities['user_mentions'] = []
+    entities = {'user_mentions': []}
     for um in extractor.extract_mentioned_screen_names_with_indices():
         entities['user_mentions'].append(um)
 
@@ -51,10 +50,7 @@ def getEntities(tweet):
         del ht['hashtag']
         entities['hashtags'].append(ht)
 
-    entities['urls'] = []
-    for url in extractor.extract_urls_with_indices():
-        entities['urls'].append(url)
-
+    entities['urls'] = list(extractor.extract_urls_with_indices())
     return entities
 
 

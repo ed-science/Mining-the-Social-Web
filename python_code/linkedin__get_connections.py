@@ -38,20 +38,27 @@ print >> sys.stderr, 'Fetching extended connections...'
 
 extended_connections = []
 try:
-    for c in connections['values']:
-        extended_connections.append(api.get_profile(member_id=c['id'], member_url=None, selectors=[
-            'first-name',
-            'last-name',
-            'current-status',
-            'educations',
-            'specialties',
-            'interests',
-            'honors',
-            'positions',
-            'industry',
-            'summary',
-            'location',
-        ]))
+    extended_connections.extend(
+        api.get_profile(
+            member_id=c['id'],
+            member_url=None,
+            selectors=[
+                'first-name',
+                'last-name',
+                'current-status',
+                'educations',
+                'specialties',
+                'interests',
+                'honors',
+                'positions',
+                'industry',
+                'summary',
+                'location',
+            ],
+        )
+        for c in connections['values']
+    )
+
 except LinkedInError:
     pass
 
@@ -60,8 +67,6 @@ except LinkedInError:
 if not os.path.isdir('out'):
     os.mkdir('out')
 
-f = open('out/linkedin_connections.pickle', 'wb')
-cPickle.dump(extended_connections, f)
-f.close()
-
+with open('out/linkedin_connections.pickle', 'wb') as f:
+    cPickle.dump(extended_connections, f)
 print >> sys.stderr, 'Data pickled to out/linkedin_connections.pickle'

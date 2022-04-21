@@ -37,8 +37,12 @@ def uniqueMentionsAndAuthorsMapper(doc):
     if not doc.get('entities'):
         import twitter_text
         extractor = twitter_text.Extractor(doc['text'])
-        doc['entities'] = {'user_mentions': [um for um in
-                           extractor.extract_mentioned_screen_names_with_indices()]}
+        doc['entities'] = {
+            'user_mentions': list(
+                extractor.extract_mentioned_screen_names_with_indices()
+            )
+        }
+
 
     # Emit the @mentions
 

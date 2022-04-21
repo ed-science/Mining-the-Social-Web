@@ -60,11 +60,9 @@ for p in posts_data:
 if not os.path.isdir('out'):
     os.mkdir('out')
 
-filename = os.path.join('out', USER + '.buzz')
-f = open(filename, 'w')
-f.write(json.dumps(posts))
-f.close()
-
+filename = os.path.join('out', f'{USER}.buzz')
+with open(filename, 'w') as f:
+    f.write(json.dumps(posts))
 print >> sys.stderr, "Data written to", f.name
 
 # Or store it somewhere like CouchDB like so...

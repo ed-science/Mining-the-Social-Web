@@ -138,8 +138,7 @@ class BaseHandler(webapp.RequestHandler):
         """Returns the logged in Facebook user, or None if unconnected."""
         if not hasattr(self, "_current_user"):
             self._current_user = None
-            user_id = parse_cookie(self.request.cookies.get("fb_user"))
-            if user_id:
+            if user_id := parse_cookie(self.request.cookies.get("fb_user")):
                 self._current_user = User.get_by_key_name(user_id)
         return self._current_user
 

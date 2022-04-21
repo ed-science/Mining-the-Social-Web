@@ -20,7 +20,7 @@ transforms = [
     ]
 
 csvReader = csv.DictReader(open(CSV_FILE), delimiter=',', quotechar='"')
-contacts = [row for row in csvReader]
+contacts = list(csvReader)
 
 # Read in a list of titles and split apart
 # any combined titles like "President/CEO"
